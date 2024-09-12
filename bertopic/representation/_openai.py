@@ -48,6 +48,8 @@ Based on the information above, extract a short topic label in the following for
 topic: <topic label>
 """
 
+DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant."
+
 
 class OpenAI(BaseRepresentation):
     r"""Using the OpenAI API to generate topic labels based
@@ -161,6 +163,11 @@ class OpenAI(BaseRepresentation):
         else:
             self.prompt = prompt
 
+        if chat and system_prompt is None:
+            self.system_prompt = DEFAULT_SYSTEM_PROMPT
+        else:
+            self.system_prompt = system_prompt
+
         self.default_prompt_ = DEFAULT_CHAT_PROMPT if chat else DEFAULT_PROMPT
         self.delay_in_seconds = delay_in_seconds
         self.exponential_backoff = exponential_backoff
@@ -216,7 +223,7 @@ class OpenAI(BaseRepresentation):
 
             if self.chat:
                 messages = [
-                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": prompt},
                 ]
                 kwargs = {
